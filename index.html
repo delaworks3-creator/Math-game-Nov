@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Kelas 2 - Mem Dela</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#d9f2ff,#f8ddff);
+  margin: 0;
+  padding: 15px;
+  color: #333;
+}
+
+.container {
+  max-width: 700px;
+  margin: 15px auto;
+  background: white;
+  padding: 23px;
+  border-radius: 22px;
+  text-align: center;
+  box-shadow: 0 5px 18px #0002;
+}
+
+h1 { color: #7138a5; margin-bottom: 5px; }
+.school {
+  color: #087e8b;
+  font-weight: bold;
+  font-size: 18px;
+}
+.teacher {
+  color: #d45b91;
+  font-weight: bold;
+  margin: 10px;
+}
+
+.info {
+  background: #f4e8ff;
+  padding: 12px;
+  border-radius: 12px;
+  line-height: 1.6;
+  margin: 15px 0;
+}
+
+.lamps {
+  font-size: 30px;
+  margin: 12px;
+}
+
+#progress {
+  color: #7138a5;
+  font-weight: bold;
+}
+
+#question {
+  font-size: 21px;
+  font-weight: bold;
+  line-height: 1.5;
+  margin: 20px 0;
+  min-height: 100px;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  margin: 7px 0;
+  border: 2px solid #d7c3ef;
+  border-radius: 12px;
+  background: #faf6ff;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 1;
+  cursor: default;
+}
+
+button:hover { background: #ead8ff; }
+
+.correct {
+  background: #c8f5d0 !important;
+  border-color: green !important;
+}
+
+.wrong {
+  background: #ffd0d0 !important;
+  border-color: red !important;
+}
+
+.main-btn {
+  background: #7138a5;
+  color: white;
+  border: none;
+  font-weight: bold;
+}
+
+.listen-btn {
+  background: #e4f5ff;
+  border-color: #83c9eb;
+}
+
+#feedback {
+  min-height: 65px;
+  font-weight: bold;
+  line-height: 1.5;
+  margin: 15px 0;
+}
+
+#result { display: none; }
+
+footer {
+  margin-top: 20px;
+  color: #777;
+  font-size: 14px;
+}
+
+@media(max-width:400px) {
+  .container { padding: 16px; }
+  #question { font-size: 19px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>➕ MATH TIME! 🔢</h1>
+<div class="school">SD N 71 MALTENG</div>
+<div class="teacher">👩‍🏫 With Mem Dela</div>
+
+<h2>Penjumlahan Soal Cerita</h2>
+<p>Matematika Kelas 2</p>
+
+<div class="info">
+  🌟 Ayo berpikir dan berhitung!<br>
+  Bacalah soal cerita dengan teliti.<br>
+  Pilih jawaban yang paling tepat.<br>
+  Semua soal memiliki hasil di bawah 50.
+</div>
+
+<div id="game">
+
+  <div class="lamps">
+    <span id="green">⚪</span>
+    <span id="red">⚪</span>
+  </div>
+
+  <p id="progress">Soal 1 dari 10</p>
+
+  <div id="question"></div>
+
+  <button class="listen-btn" onclick="readQuestion()">
+    🔊 Dengarkan Soal
+  </button>
+
+  <div id="answers"></div>
+
+  <div id="feedback" aria-live="polite"></div>
+
+  <button id="next" class="main-btn"
+    onclick="nextQuestion()" hidden>
+    Soal Berikutnya ➜
+  </button>
+
+</div>
+
+<div id="result">
+  <h2>🎉 SELAMAT!</h2>
+  <h1 id="score"></h1>
+  <p id="message"></p>
+  <button class="main-btn" onclick="restartGame()">
+    🔄 Main Lagi
+  </button>
+</div>
+
+<footer>
+  💜 Belajar Matematika Menyenangkan Bersama Mem Dela!
+</footer>
+
+</div>
+
+<script>
+
+const questions = [
+
+{
+q:"1. Rina mempunyai 12 buah apel. Ibu memberikan lagi 8 buah apel. Berapa jumlah apel Rina sekarang?",
+a:["18 buah","20 buah","22 buah","24 buah"],
+c:1,
+why:"12 + 8 = 20 buah apel."
+},
+
+{
+q:"2. Budi mempunyai 15 kelereng. Ayah membelikan 10 kelereng lagi. Berapa jumlah kelereng Budi?",
+a:["20 kelereng","24 kelereng","25 kelereng","26 kelereng"],
+c:2,
+why:"15 + 10 = 25 kelereng."
+},
+
+{
+q:"3. Di pohon ada 13 ekor burung. Kemudian datang lagi 7 ekor burung. Berapa jumlah burung sekarang?",
+a:["18 ekor","20 ekor","21 ekor","22 ekor"],
+c:1,
+why:"13 + 7 = 20 ekor burung."
+},
+
+{
+q:"4. Siti membeli 16 buah jeruk. Kakak membeli 9 buah jeruk. Berapa jumlah jeruk mereka?",
+a:["23 buah","24 buah","25 buah","26 buah"],
+c:2,
+why:"16 + 9 = 25 buah jeruk."
+},
+
+{
+q:"5. Di kelas ada 18 siswa laki-laki dan 12 siswa perempuan. Berapa jumlah seluruh siswa?",
+a:["28 siswa","29 siswa","30 siswa","31 siswa"],
+c:2,
+why:"18 + 12 = 30 siswa."
+},
+
+{
+q:"6. Ibu membuat 14 kue cokelat dan 15 kue keju. Berapa jumlah seluruh kue?",
+a:["27 kue","28 kue","29 kue","30 kue"],
+c:2,
+why:"14 + 15 = 29 kue."
+},
+
+{
+q:"7. Andi membaca 21 halaman buku pada pagi hari dan 8 halaman pada sore hari. Berapa halaman yang dibaca Andi?",
+a:["27 halaman","28 halaman","29 halaman","30 halaman"],
+c:2,
+why:"21 + 8 = 29 halaman."
+},
+
+{
+q:"8. Kebun Pak Budi memiliki 17 pohon mangga dan 16 pohon rambutan. Berapa jumlah seluruh pohon?",
+a:["31 pohon","32 pohon","33 pohon","34 pohon"],
+c:2,
+why:"17 + 16 = 33 pohon."
+},
+
+{
+q:"9. Di toko ada 24 pensil. Pemilik toko menambah 13 pensil lagi. Berapa jumlah pensil sekarang?",
+a:["35 pensil","36 pensil","37 pensil","38 pensil"],
+c:2,
+why:"24 + 13 = 37 pensil."
+},
+
+{
+q:"10. Dela memiliki 22 bunga merah dan 17 bunga kuning. Berapa jumlah seluruh bunga Dela?",
+a:["37 bunga","38 bunga","39 bunga","40 bunga"],
+c:2,
+why:"22 + 17 = 39 bunga."
+}
+
+];
+
+let current = 0;
+let score = 0;
+let answered = false;
+
+function speak(text) {
+  if (!("speechSynthesis" in window)) return;
+
+  window.speechSynthesis.cancel();
+
+  const utterance =
+    new SpeechSynthesisUtterance(text);
+
+  utterance.lang = "id-ID";
+  utterance.rate = 0.9;
+  utterance.pitch = 1;
+
+  window.speechSynthesis.speak(utterance);
+}
+
+function sound(type) {
+  try {
+    const AudioContext =
+      window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContext) return;
+
+    const ctx = new AudioContext();
+    const oscillator = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    oscillator.connect(gain);
+    gain.connect(ctx.destination);
+
+    oscillator.type = "sine";
+    gain.gain.value = 0.12;
+
+    if (type === "correct") {
+      oscillator.frequency.setValueAtTime(660, ctx.currentTime);
+      oscillator.frequency.setValueAtTime(880, ctx.currentTime + 0.15);
+    } else {
+      oscillator.frequency.setValueAtTime(250, ctx.currentTime);
+      oscillator.frequency.setValueAtTime(180, ctx.currentTime + 0.2);
+    }
+
+    oscillator.start();
+    oscillator.stop(ctx.currentTime + 0.4);
+
+    oscillator.onended = () => ctx.close();
+
+  } catch(e) {}
+}
+
+function showQuestion() {
+
+  answered = false;
+
+  const item = questions[current];
+
+  document.getElementById("progress").textContent =
+    "Soal " + (current + 1) + " dari 10";
+
+  document.getElementById("question").textContent = item.q;
+
+  document.getElementById("feedback").textContent = "";
+
+  document.getElementById("green").textContent = "⚪";
+  document.getElementById("red").textContent = "⚪";
+
+  document.getElementById("next").hidden = true;
+
+  const box = document.getElementById("answers");
+  box.innerHTML = "";
+
+  item.a.forEach((answer, index) => {
+
+    const btn = document.createElement("button");
+
+    btn.textContent = answer;
+
+    btn.onclick = () => checkAnswer(index, btn);
+
+    box.appendChild(btn);
+
+  });
+
+}
+
+function readQuestion() {
+  speak(questions[current].q);
+}
+
+function checkAnswer(index, btn) {
+
+  if (answered) return;
+
+  answered = true;
+
+  const item = questions[current];
+
+  const buttons =
+    document.querySelectorAll("#answers button");
+
+  buttons.forEach(b => b.disabled = true);
+
+  if (index === item.c) {
+
+    score += 10;
+
+    btn.classList.add("correct");
+
+    document.getElementById("green").textContent = "🟢";
+
+    document.getElementById("feedback").textContent =
+      "🎉 Hebat! Jawabanmu benar. " + item.why;
+
+    sound("correct");
+    speak("Hebat sekali! Jawabanmu benar!");
+
+  } else {
+
+    btn.classList.add("wrong");
+
+    buttons[item.c].classList.add("correct");
+
+    document.getElementById("red").textContent = "🔴";
+
+    document.getElementById("feedback").textContent =
+      "😊 Belum tepat. Jawaban yang benar adalah " +
+      item.a[item.c] + ". " + item.why;
+
+    sound("wrong");
+    speak("Jangan menyerah. Jawaban yang benar adalah " +
+      item.a[item.c]);
+
+  }
+
+  document.getElementById("next").hidden = false;
+
+  document.getElementById("next").textContent =
+    current === 9 ? "Lihat Nilai 🏆" : "Soal Berikutnya ➜";
+
+}
+
+function nextQuestion() {
+
+  if (!answered) return;
+
+  current++;
+
+  if (current === 10) {
+
+    document.getElementById("game").style.display = "none";
+
+    document.getElementById("result").style.display = "block";
+
+    document.getElementById("score").textContent =
+      score + " / 100";
+
+    document.getElementById("message").textContent =
+      score === 100
+      ? "Luar biasa! Kamu juara matematika! 🌟"
+      : score >= 70
+      ? "Bagus sekali! Terus semangat belajar! ❤️"
+      : "Tidak apa-apa. Ayo berlatih lagi! 💪";
+
+    speak("Permainan selesai. Nilaimu " + score);
+
+  } else {
+
+    showQuestion();
+
+  }
+
+}
+
+function restartGame() {
+
+  current = 0;
+  score = 0;
+
+  document.getElementById("result").style.display = "none";
+
+  document.getElementById("game").style.display = "block";
+
+  showQuestion();
+
+}
+
+showQuestion();
+
+</script>
+
+</body>
+</html>
